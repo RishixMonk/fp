@@ -43,25 +43,28 @@ const ExcelDropZone = () => {
     </>
   );
 };
-
 const styles = {
-  dropZone: {
-    width: '100%',
-    height: '200px',
-    borderWidth: '2px',
-    borderColor: '#666',
-    borderStyle: 'dashed',
-    borderRadius: '5px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '20px 0',
-  },
-  buttonContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    marginTop: '20px',
-  }
-};
+    dropZone: {
+      width: '50%',
+      height: '200px',
+      borderWidth: '2px',
+      borderColor: '#666',
+      borderStyle: 'dashed',
+      borderRadius: '5px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      margin: '20px 0',
+      marginLeft: '25%', // This leaves a 25% gap on the left
+      marginTop: "2%"
+    },
+    buttonContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+      marginTop: '20px',
+    }
+  };
+  
+  
 
 export default ExcelDropZone;
