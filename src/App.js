@@ -6,15 +6,17 @@ import ScatterPlotPage from './Components/ScatterPlot';
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Navbar title = "Excel File Analysis" />
-        <Routes>
-          <Route path="/" element={<ExcelDropZone />} />
-          <Route path="/scatter-plot" element={<ScatterPlotPage />} />
-        </Routes>
-      </div>
-    </Router>
+    <>
+      <Router>
+        <div className="App">
+          <Navbar title="Vehicle Visualiser" />
+          <Routes>
+            <Route path="/" element={<ExcelDropZone />} />
+            <Route path="/scatter-plot" element={<ScatterPlotPage />} />
+          </Routes>
+        </div>
+      </Router>
+    </>
   );
 }
 
