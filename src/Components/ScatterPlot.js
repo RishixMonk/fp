@@ -1,68 +1,98 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { useLocation } from 'react-router-dom';
+import * as topojson from 'topojson';
 
 const ScatterPlot = () => {
   const location = useLocation();
   const data = location.state?.data || [];
   const svgRef = useRef();
+  let c = 0;
 
   useEffect(() => {
-    if (data.length === 0) return; // Exit early if data is empty
+    const svg = d3.select(svgRef.current);
 
-    const formattedData = data.map((d, index) => ({
-      id: index,
-      lat: d.lat,
-      lng: d.lng,
-    }));
+    // Set up SVG dimensions
+    const width = 800;
+    const height = 600;
+    svg.selectAll("*").remove();
 
-    const margin = { top: 50, right: 50, bottom: 50, left: 50 };
-    const w = 800 - margin.left - margin.right;
-    const h = 600 - margin.top - margin.bottom;
+    // Define projection
+    const projection = d3.geoMercator()
+      .scale(120)
+      .translate([width / 2, height / 2]);
 
-    const svg = d3.select(svgRef.current)
-      .attr('width', w + margin.left + margin.right)
-      .attr('height', h + margin.top + margin.bottom)
-      .style('overflow', 'visible')
-      .style('margin-top', '100px');
+    // Append a group element to SVG
+    const g = svg.append('g')
+    // .append('feDropShadow')
 
-    // Clear previous content
-    svg.selectAll('*').remove();
+  
 
-    const plotArea = svg.append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+    // Load world map data
+    d3.json('https://raw.githubusercontent.com/d3/d3.github.com/master/world-110m.v1.json')
+      .then((world) => {
+        // Define path generator
+        const path = d3.geoPath().projection(projection);
 
-    const xScale = d3.scaleLinear()
-      .domain([12.91, 13.9])
-      .range([0, w]);
+        // Draw world map
+        g.selectAll('path')
+          .data(topojson.feature(world, world.objects.countries).features)
+          .enter().append('path')
+          .attr('d', path)
+          .attr('fill', '#ddd')
+          .attr('stroke', '#666');
+          alert("Zoom into the point to observe the difference. Yellow indicates a stoppage point");
 
-    const yScale = d3.scaleLinear()
-      .domain([74.9, 75.9])
-      .range([h, 0]);
+        // Plot data points
+        const points = g.selectAll('circle')
+          .data(data)
+          .enter().append('circle')
+          .attr('cx', (d) => projection([d.longitude, d.latitude])[0])
+          .attr('cy', (d) => projection([d.longitude, d.latitude])[1])
+          .attr('r', 3)
+          .attr('fill', (d) => {
+            c++;
+            if (d.stoppage === true) return 'yellow';
+            else return (c % 2 === 0 ? 'blue' : 'red');
+          })
+          .attr('opacity', 0.7)
+          .on('mouseover', (event, d) => {
+            // Show coordinates information
+            const [x, y] = projection([d.longitude, d.latitude]);
+            svg.append('text')
+              .attr('id', 'coordinates-info')
+              .attr('x', x)
+              .attr('y', y - 10)
+              .text(`(${d.longitude}, ${d.latitude})`)
+              .attr('text-anchor', 'middle')
+              .attr('fill', 'black');
+          })
+          .on('mouseout', () => {
+            // Remove coordinates information when mouse leaves the point
+            svg.select('#coordinates-info').remove();
+          });
 
-    const xAxis = d3.axisBottom(xScale).ticks(10);
-    const yAxis = d3.axisLeft(yScale).ticks(10);
+        const zoom = d3.zoom()
+          .scaleExtent([1, 10000]) // Limit zoom scale
+          .on('zoom', (event) => {
+            g.attr('transform', event.transform);
+          });
 
-    plotArea.append('g')
-      .attr('transform', `translate(0, ${h})`)
-      .call(xAxis);
+        // Apply zoom behavior to SVG
+        svg.call(zoom);
+      });
 
-    plotArea.append('g')
-      .call(yAxis);
-
-    plotArea.selectAll('circle')
-      .data(formattedData)
-      .enter()
-      .append('circle')
-      .attr('cx', d => xScale(d.lng))
-      .attr('cy', d => yScale(d.lat))
-      .attr('r', 5)
-      .attr('fill', 'blue');
   }, [data]);
 
   return (
-    <svg ref={svgRef}></svg>
+    <div style={{ backgroundColor: '#f0f8ff', padding: '20px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)' }}>
+      <svg ref={svgRef} width={800} height={600} style={{ display: 'block', margin: 'auto',boxShadow: '0px 0px 10px rgba(106, 90, 205, 5.1)'
+}}></svg>
+<br></br>
+      <p style={{ textAlign: 'center', color: 'Black' ,backgroundColor:d3.rgb(255, 99, 71, 0.8)}}>Zoom into the point to observe the difference. Yellow indicates a stoppage point.</p>
+    </div>
   );
 };
+
 
 export default ScatterPlot;
