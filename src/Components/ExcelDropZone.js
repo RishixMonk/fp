@@ -33,11 +33,11 @@ const ExcelDropZone = () => {
 
   const handleAnalyseClick = () => {
     if (!jsonData) {
-      alert('Please upload a file.'); // Notify the user if no file is uploaded
-      return;
+      alert('Please upload a file.'); 
+            return;
     }
 
-    const stoppageTimeThreshold = parseFloat(stoppageValue); // Parse stoppageValue to float
+    const stoppageTimeThreshold = parseFloat(stoppageValue);
     const points = [];
     for (let i = 0; i < jsonData.length; i++) {
       const row = jsonData[i];
@@ -73,7 +73,7 @@ const ExcelDropZone = () => {
         }
       }
     }
-    setParsedData(points); // Store the parsed points in state
+    setParsedData(points);
     if(first) {setFirst(0);return;}
     navigate('/scatter-plot', { state: { data: points } });
   };
@@ -124,7 +124,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     margin: '20px 0',
-    marginLeft: '25%', // This leaves a 25% gap on the left
+    marginLeft: '25%', 
     marginTop: '2%'
   },
   buttonContainer: {

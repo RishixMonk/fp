@@ -12,26 +12,19 @@ const ScatterPlot = () => {
   useEffect(() => {
     const svg = d3.select(svgRef.current);
 
-    // Set up SVG dimensions
     const width = 800;
     const height = 600;
     svg.selectAll("*").remove();
 
-    // Define projection
     const projection = d3.geoMercator()
       .scale(120)
       .translate([width / 2, height / 2]);
 
-    // Append a group element to SVG
     const g = svg.append('g')
-    // .append('feDropShadow')
 
-  
 
-    // Load world map data
     d3.json('https://raw.githubusercontent.com/d3/d3.github.com/master/world-110m.v1.json')
       .then((world) => {
-        // Define path generator
         const path = d3.geoPath().projection(projection);
 
         // Draw world map
@@ -43,7 +36,6 @@ const ScatterPlot = () => {
           .attr('stroke', '#666');
           alert("Zoom into the point to observe the difference. Yellow indicates a stoppage point");
 
-        // Plot data points
         const points = g.selectAll('circle')
           .data(data)
           .enter().append('circle')
@@ -57,7 +49,6 @@ const ScatterPlot = () => {
           })
           .attr('opacity', 0.7)
           .on('mouseover', (event, d) => {
-            // Show coordinates information
             const [x, y] = projection([d.longitude, d.latitude]);
             svg.append('text')
               .attr('id', 'coordinates-info')
@@ -68,17 +59,15 @@ const ScatterPlot = () => {
               .attr('fill', 'black');
           })
           .on('mouseout', () => {
-            // Remove coordinates information when mouse leaves the point
             svg.select('#coordinates-info').remove();
           });
 
         const zoom = d3.zoom()
-          .scaleExtent([1, 10000]) // Limit zoom scale
+          .scaleExtent([1, 10000])
           .on('zoom', (event) => {
             g.attr('transform', event.transform);
           });
 
-        // Apply zoom behavior to SVG
         svg.call(zoom);
       });
 
